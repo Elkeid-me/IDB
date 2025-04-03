@@ -286,7 +286,7 @@ end
 
 defmodule Idb.Passwords.Search do
   @moduledoc """
-  搜索条目，从该用户所有的条目中选取 <website> 和 <username> 包含特定子串的项。
+  搜索条目，从该用户所有的条目中选取 `website` 和 `username` 包含特定子串的项。
 
   关于内部实现的注释：尝试规避 [LIKE 注入](https://github.blog/engineering/like-injection/)
 
@@ -297,7 +297,7 @@ defmodule Idb.Passwords.Search do
       - `Authorization`: `Bearer <从注册或登录获取的 access>`
     - body
       ```json
-      { "query": "<要搜索的字串>" }
+      { "query": "<要搜索的子串>" }
       ```
   - 返回
       - header

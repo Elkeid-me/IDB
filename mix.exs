@@ -9,7 +9,7 @@ defmodule Idb.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
 
-      #Docs
+      # Docs
       name: "IDB",
       source_url: "https://github.com/Elkeid-me/IDB",
       homepage_url: "http://elkeid-me.github.io/IDB",
