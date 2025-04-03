@@ -70,5 +70,5 @@ mix run
 ## 构建文档
 
 ```bash
-mix doc
+mix docs
 ```

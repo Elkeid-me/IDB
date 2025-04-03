@@ -1,4 +1,8 @@
 defmodule Idb.Auth do
+  @moduledoc """
+  身份验证
+  """
+
   alias Idb.Users
   use Guardian, otp_app: :idb
 
@@ -23,6 +27,8 @@ defmodule Idb.Auth do
 end
 
 defmodule Idb.AuthPipeline do
+  @moduledoc false
+
   use Guardian.Plug.Pipeline, otp_app: :idb
 
   plug(Guardian.Plug.VerifySession)
@@ -32,11 +38,13 @@ defmodule Idb.AuthPipeline do
 end
 
 defmodule Idb.AuthErrorHandler do
+  @moduledoc false
+
   alias Idb.Utils
 
   @behaviour Guardian.Plug.ErrorHandler
 
   @impl Guardian.Plug.ErrorHandler
   def auth_error(conn, _tuple, _opts),
-    do: Utils.send_detail(conn, "Authentication required. 该功能需要先登录。", 401)
+    do: Utils.send_detail(conn, "该功能需要先登录", 401)
 end

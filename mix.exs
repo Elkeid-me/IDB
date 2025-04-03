@@ -8,7 +8,11 @@ defmodule Idb.MixProject do
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+
+      #Docs
       name: "IDB",
+      source_url: "https://github.com/Elkeid-me/IDB",
+      homepage_url: "http://elkeid-me.github.io/IDB",
       docs: [
         extras: ["README.md"]
       ]
@@ -30,6 +34,7 @@ defmodule Idb.MixProject do
       {:ex_doc, "~> 0.36", only: :dev, runtime: false},
       {:guardian, "~> 2.3"},
       {:jason, "~> 1.4"},
+      {:makeup_json, ">= 0.0.0", only: :dev, runtime: false},
       {:myxql, "~> 0.7"}
     ]
   end

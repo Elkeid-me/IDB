@@ -2,7 +2,7 @@ defmodule Idb.AuthRouter do
   @moduledoc """
   身份验证路由
 
-  所有需要登录的请求被 `Idb.Router` 转发到此处，身份验证由 `Idb.AuthPipeline` 处理，验证错误由 `Idb.AuthErrorHandler` 处理。
+  所有需要登录的请求被 `Idb.Router` 转发到此处。
   """
   alias Idb.{Users, Passwords}
   use Plug.Router
@@ -10,11 +10,12 @@ defmodule Idb.AuthRouter do
   plug(:match)
   plug(:dispatch)
 
-  get("/api/v1/passwords/list/", to: Passwords.List)
+  get("/api/v1/item/list/", to: Passwords.List)
 
-  post("/api/v1/passwords/add/", to: Passwords.Add)
-  post("/api/v1/passwords/delete/", to: Passwords.Delete)
-  post("/api/v1/passwords/edit/", to: Passwords.Edit)
+  post("/api/v1/item/add/", to: Passwords.Add)
+  post("/api/v1/item/delete/", to: Passwords.Delete)
+  post("/api/v1/item/edit/", to: Passwords.Edit)
+  post("/api/v1/item/search/", to: Passwords.Search)
 end
 
 defmodule Idb.Router do
@@ -44,14 +45,15 @@ defmodule Idb.Router do
 
   plug(:dispatch)
 
-  post("/api/v1/register/", to: Users.Register)
-  post("/api/v1/login/", to: Users.Login)
+  post("/api/v1/user/register/", to: Users.Register)
+  post("/api/v1/user/login/", to: Users.Login)
 
-  get("/api/v1/passwords/list/", to: Idb.AuthRouter)
+  get("/api/v1/item/list/", to: Idb.AuthRouter)
 
-  post("/api/v1/passwords/add/", to: Idb.AuthRouter)
-  post("/api/v1/passwords/delete/", to: Idb.AuthRouter)
-  post("/api/v1/passwords/edit/", to: Idb.AuthRouter)
+  post("/api/v1/item/add/", to: Idb.AuthRouter)
+  post("/api/v1/item/delete/", to: Idb.AuthRouter)
+  post("/api/v1/item/edit/", to: Idb.AuthRouter)
+  post("/api/v1/item/search/", to: Idb.AuthRouter)
 
   match _ do
     Utils.send_detail(
