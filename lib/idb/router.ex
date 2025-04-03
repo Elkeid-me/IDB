@@ -4,16 +4,17 @@ defmodule Idb.AuthRouter do
 
   所有需要登录的请求被 `Idb.Router` 转发到此处，身份验证由 `Idb.AuthPipeline` 处理，验证错误由 `Idb.AuthErrorHandler` 处理。
   """
-  alias Idb.Users
+  alias Idb.{Users, Passwords}
   use Plug.Router
   plug(Idb.AuthPipeline)
   plug(:match)
   plug(:dispatch)
 
-  post("/users/edit/", to: Users.Register)
-  # get("/users/profile/", to: Users.Profile)
+  get("/api/v1/passwords/list/", to: Passwords.List)
 
-  # post("/experiments/create/", to: Experiments.Create)
+  post("/api/v1/passwords/add/", to: Passwords.Add)
+  post("/api/v1/passwords/delete/", to: Passwords.Delete)
+  post("/api/v1/passwords/edit/", to: Passwords.Edit)
 end
 
 defmodule Idb.Router do
@@ -43,8 +44,14 @@ defmodule Idb.Router do
 
   plug(:dispatch)
 
-  post("/api/v1/users/register/", to: Users.Register)
-  post("/api/v1/users/login/", to: Users.Login)
+  post("/api/v1/register/", to: Users.Register)
+  post("/api/v1/login/", to: Users.Login)
+
+  get("/api/v1/passwords/list/", to: Idb.AuthRouter)
+
+  post("/api/v1/passwords/add/", to: Idb.AuthRouter)
+  post("/api/v1/passwords/delete/", to: Idb.AuthRouter)
+  post("/api/v1/passwords/edit/", to: Idb.AuthRouter)
 
   match _ do
     Utils.send_detail(

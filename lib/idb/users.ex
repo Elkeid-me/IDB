@@ -36,16 +36,14 @@ defmodule Idb.Users.Register do
   def init(options), do: options
 
   def call(conn, _opts) do
-    with %{"email" => email, "password" => password} <- conn.body_params do
+    with %{"email" => email, "password" => password} when is_binary(email) and is_binary(password) <-
+           conn.body_params do
       try do
-        new_user = Users.new(email, password)
+        new_user = Users.new(email, password) |> elem(1)
+
         Utils.send_jwt(conn, new_user.id)
       rescue
-        e in Ecto.ConstraintError ->
-          case e.constraint do
-            "users_email_index" ->
-              Utils.send_detail(conn, "电子邮件已存在。")
-          end
+        _ -> Utils.send_detail(conn, "电子邮件已存在。")
       end
     else
       _ -> Utils.send_detail(conn, "不合法的参数。")
@@ -62,7 +60,8 @@ defmodule Idb.Users.Login do
     with %{
            "email" => email,
            "password" => password
-         } <- conn.body_params do
+         }
+         when is_binary(email) and is_binary(password) <- conn.body_params do
       with %Users{password_hashed: password_hashed, salt: salt, id: id} <-
              Users
              |> where(email: ^email)

@@ -29,8 +29,18 @@ defmodule Idb.Passwords.List do
   def call(conn, _opts) do
     id = Guardian.Plug.current_resource(conn)
 
-    data = Passwords |> where(creator_id: ^id) |> Repo.all()
-    Utils.send_json(conn, data)
+    if is_integer(id) do
+      data =
+        Passwords
+        |> where(creator_id: ^id)
+        |> select([:id, :website, :username, :password])
+        |> Repo.all()
+        |> Enum.map(fn pswd -> Map.take(pswd, [:id, :website, :username, :password]) end)
+
+      Utils.send_json(conn, data)
+    else
+      Utils.send_detail(conn, "不合法的参数。")
+    end
   end
 end
 
@@ -49,7 +59,7 @@ defmodule Idb.Passwords.Delete do
           Utils.send_detail(conn, "不存在的条目。")
 
         ^user_id ->
-          case Repo.delete(%Passwords{id: id}, id) do
+          case Repo.delete(%Passwords{id: id}) do
             {:ok, _} -> Utils.send_message(conn, "")
             {:error, _} -> Utils.send_detail(conn, "数据库插入失败", 500)
           end
@@ -112,7 +122,8 @@ defmodule Idb.Passwords.Add do
   def call(conn, _opts) do
     id = Guardian.Plug.current_resource(conn)
 
-    with %{"website" => website, "username" => username, "password" => password} <-
+    with %{"website" => website, "username" => username, "password" => password}
+         when is_binary(website) and is_binary(username) and is_binary(password) <-
            conn.body_params do
       data = %Passwords{website: website, username: username, password: password, creator_id: id}
 
