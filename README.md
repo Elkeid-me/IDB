@@ -12,6 +12,28 @@
    ```
 4. 克隆本仓库；
 5. 运行 `mix deps.get` 获取依赖库；
+6. 确保你已经配置好了 MySQL。将 `config` 文件夹下的 `config_template.exs` 重命名为 `config.exs`，编辑以下字段：
+   ```elixir
+   config :idb, Idb.Auth,
+     issuer: "idb",
+     secret_key: "" # 填写 JWT 的 secret key，可以用 mix guardian.gen.secret 生成一个
+   ```
+
+   ```elixir
+   config :idb, Idb.Repo,
+     database: "", # 数据库名称
+     username: "", # MySQL 用户名
+     password: "", # 对应上述用户的密码
+     hostname: "", # MySQL 所在的主机地址
+     port: 0,      # MySQL 端口号
+     log: false
+   ```
+
+   ```elixir
+   config :idb,
+     port: 0, # IDB 使用的端口
+     ecto_repos: [Idb.Repo]
+   ```
 
 ## Debug 运行
 
