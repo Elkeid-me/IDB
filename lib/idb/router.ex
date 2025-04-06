@@ -58,7 +58,7 @@ defmodule Idb.Router do
   match _ do
     Utils.send_detail(
       conn,
-      "Requested API not found, or the method is not allowed. 请求的 API 不存在，或方法不被允许。",
+      "请求的 API 不存在，或方法不被允许",
       404
     )
   end

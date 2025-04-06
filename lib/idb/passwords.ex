@@ -134,7 +134,7 @@ defmodule Idb.Passwords.List do
       |> where(creator_id: ^user_id)
       |> select([:id, :website, :username, :password])
       |> Repo.all()
-      |> Enum.map(fn pswd -> Map.take(pswd, [:id, :website, :username, :password]) end)
+      |> Enum.map(fn item -> Map.take(item, [:id, :website, :username, :password]) end)
 
     Utils.send_json(conn, data)
   end
@@ -346,7 +346,7 @@ defmodule Idb.Passwords.Search do
         )
         |> select([:id, :website, :username, :password])
         |> Repo.all()
-        |> Enum.map(fn pswd -> Map.take(pswd, [:id, :website, :username, :password]) end)
+        |> Enum.map(fn elem -> Map.take(elem, [:id, :website, :username, :password]) end)
 
       Utils.send_json(conn, data)
     else

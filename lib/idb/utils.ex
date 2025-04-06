@@ -35,7 +35,7 @@ defmodule Idb.Utils do
   以 `id` 为 sub，编码 jwt 并发送。
   """
   def send_jwt(conn, id) do
-    jwt = Auth.encode_and_sign(%{id: id}) |> elem(1)
+    jwt = %{id: id} |> Auth.encode_and_sign() |> elem(1)
     send_json(conn, %{id: id, access: jwt})
   end
 end
