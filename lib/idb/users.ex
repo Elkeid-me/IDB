@@ -1,8 +1,10 @@
 defmodule Idb.Users do
   @moduledoc false
-  alias Idb.{Repo, Users, Passwords}
   use Ecto.Schema
+
   import Ecto.Query
+
+  alias Idb.{Passwords, Repo, Users}
 
   schema "users" do
     field(:username, :string)
@@ -16,12 +18,11 @@ defmodule Idb.Users do
   def new(username, password) do
     salt = :crypto.strong_rand_bytes(16)
 
-    %Users{
+    Repo.insert(%Users{
       username: username,
       password_hashed: hash_password(password, salt),
       salt: salt
-    }
-    |> Repo.insert()
+    })
   end
 
   def hash_password(password, salt), do: :crypto.pbkdf2_hmac(:sha256, password, salt, 100_000, 32)
@@ -66,22 +67,24 @@ defmodule Idb.Users.Register do
     ```
   """
 
-  alias Idb.{Utils, Users}
+  alias Idb.{Users, Utils}
+
   def init(options), do: options
 
   def call(conn, _opts) do
-    with %{"username" => username, "password" => password}
-         when is_binary(username) and is_binary(password) <-
-           conn.body_params do
-      try do
-        new_user = Users.new(username, password) |> elem(1)
+    case conn.body_params do
+      %{"username" => username, "password" => password}
+      when is_binary(username) and is_binary(password) ->
+        try do
+          new_user = username |> Users.new(password) |> elem(1)
 
-        Utils.send_jwt(conn, new_user.id)
-      rescue
-        _ -> Utils.send_detail(conn, "电子邮件已存在")
-      end
-    else
-      _ -> Utils.send_detail(conn, "不合法的参数")
+          Utils.send_jwt(conn, new_user.id)
+        rescue
+          _ -> Utils.send_detail(conn, "电子邮件已存在")
+        end
+
+      _ ->
+        Utils.send_detail(conn, "不合法的参数")
     end
   end
 end
@@ -120,32 +123,36 @@ defmodule Idb.Users.Login do
     ```
   """
 
-  alias Idb.{Users, Repo, Utils}
   import Ecto.Query
+
+  alias Idb.{Repo, Users, Utils}
+
   def init(options), do: options
 
   def call(conn, _opts) do
-    with %{
-           "username" => username,
-           "password" => password
-         }
-         when is_binary(username) and is_binary(password) <- conn.body_params do
-      with %Users{password_hashed: password_hashed, salt: salt, id: id} <-
-             Users
+    case conn.body_params do
+      %{
+        "username" => username,
+        "password" => password
+      }
+      when is_binary(username) and is_binary(password) ->
+        case Users
              |> where(username: ^username)
              |> select([:password_hashed, :salt, :id])
              |> Repo.one() do
-        if Users.password_verified?(password, password_hashed, salt) do
-          Utils.send_jwt(conn, id)
-        else
-          Utils.send_detail(conn, "电子邮件或密码错误")
+          %Users{password_hashed: password_hashed, salt: salt, id: id} ->
+            if Users.password_verified?(password, password_hashed, salt) do
+              Utils.send_jwt(conn, id)
+            else
+              Utils.send_detail(conn, "电子邮件或密码错误")
+            end
+
+          _ ->
+            Utils.send_detail(conn, "电子邮件或密码错误")
         end
-      else
-        _ ->
-          Utils.send_detail(conn, "电子邮件或密码错误")
-      end
-    else
-      _ -> Utils.send_detail(conn, "不合法的参数")
+
+      _ ->
+        Utils.send_detail(conn, "不合法的参数")
     end
   end
 end

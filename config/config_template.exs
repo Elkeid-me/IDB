@@ -8,9 +8,6 @@ config :idb, Idb.AuthPipeline,
   module: Idb.Auth,
   error_handler: Idb.AuthErrorHandler
 
-config :jose,
-  json_module: Jason
-
 config :idb, Idb.Repo,
   database: "",
   username: "",
@@ -22,3 +19,6 @@ config :idb, Idb.Repo,
 config :idb,
   port: 0,
   ecto_repos: [Idb.Repo]
+
+config :jose,
+  json_module: Jason

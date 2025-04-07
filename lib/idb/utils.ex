@@ -4,6 +4,7 @@ defmodule Idb.Utils do
   """
   import Jason
   import Plug.Conn
+
   alias Idb.Auth
 
   def send_json(conn, data, status \\ 200) do
@@ -18,8 +19,7 @@ defmodule Idb.Utils do
 
   `detail` 为失败时的信息。成功时应当使用 `send_message/3`。
   """
-  def send_detail(conn, detail, status \\ 400),
-    do: send_json(conn, %{"detail" => detail}, status)
+  def send_detail(conn, detail, status \\ 400), do: send_json(conn, %{"detail" => detail}, status)
 
   @doc """
   将 `message` 以 `{ "message": message }` 格式发送。

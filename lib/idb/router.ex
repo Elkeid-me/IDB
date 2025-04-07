@@ -4,8 +4,10 @@ defmodule Idb.AuthRouter do
 
   所有需要登录的请求被 `Idb.Router` 转发到此处。
   """
-  alias Idb.{Users, Passwords}
   use Plug.Router
+
+  alias Idb.{Passwords, Users}
+
   plug(Idb.AuthPipeline)
   plug(:match)
   plug(:dispatch)
@@ -24,8 +26,10 @@ defmodule Idb.Router do
 
   所有流量到达此处，然后根据 URL 匹配、转发。此外，配置了 `Corsica` 处理跨域请求。
   """
-  alias Idb.{Users, Utils}
   use Plug.Router
+
+  alias Idb.{Users, Utils}
+
   plug(Plug.Logger)
 
   plug(:match)

@@ -3,8 +3,9 @@ defmodule Idb.Auth do
   身份验证
   """
 
-  alias Idb.Users
   use Guardian, otp_app: :idb
+
+  alias Idb.Users
 
   def subject_for_token(%{id: id}, _claims) do
     sub = to_string(id)
@@ -40,11 +41,10 @@ end
 defmodule Idb.AuthErrorHandler do
   @moduledoc false
 
-  alias Idb.Utils
-
   @behaviour Guardian.Plug.ErrorHandler
 
+  alias Idb.Utils
+
   @impl Guardian.Plug.ErrorHandler
-  def auth_error(conn, _tuple, _opts),
-    do: Utils.send_detail(conn, "该功能需要先登录", 401)
+  def auth_error(conn, _tuple, _opts), do: Utils.send_detail(conn, "该功能需要先登录", 401)
 end
