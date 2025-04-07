@@ -5,7 +5,7 @@ defmodule Idb.Users do
   import Ecto.Query
 
   schema "users" do
-    field(:email, :string)
+    field(:username, :string)
     field(:password_hashed, :binary)
     field(:salt, :binary)
 
@@ -13,11 +13,11 @@ defmodule Idb.Users do
     timestamps()
   end
 
-  def new(email, password) do
+  def new(username, password) do
     salt = :crypto.strong_rand_bytes(16)
 
     %Users{
-      email: email,
+      username: username,
       password_hashed: hash_password(password, salt),
       salt: salt
     }
@@ -43,7 +43,7 @@ defmodule Idb.Users.Register do
     - body
       ```json
       {
-        "email": "alice@gmail.com",
+        "username": "alice",
         "password": "114514"
       }
       ```
@@ -70,10 +70,11 @@ defmodule Idb.Users.Register do
   def init(options), do: options
 
   def call(conn, _opts) do
-    with %{"email" => email, "password" => password} when is_binary(email) and is_binary(password) <-
+    with %{"username" => username, "password" => password}
+         when is_binary(username) and is_binary(password) <-
            conn.body_params do
       try do
-        new_user = Users.new(email, password) |> elem(1)
+        new_user = Users.new(username, password) |> elem(1)
 
         Utils.send_jwt(conn, new_user.id)
       rescue
@@ -96,7 +97,7 @@ defmodule Idb.Users.Login do
     - body
       ```json
       {
-        "email": "alice@gmail.com",
+        "username": "alice",
         "password": "114514"
       }
       ```
@@ -125,13 +126,13 @@ defmodule Idb.Users.Login do
 
   def call(conn, _opts) do
     with %{
-           "email" => email,
+           "username" => username,
            "password" => password
          }
-         when is_binary(email) and is_binary(password) <- conn.body_params do
+         when is_binary(username) and is_binary(password) <- conn.body_params do
       with %Users{password_hashed: password_hashed, salt: salt, id: id} <-
              Users
-             |> where(email: ^email)
+             |> where(username: ^username)
              |> select([:password_hashed, :salt, :id])
              |> Repo.one() do
         if Users.password_verified?(password, password_hashed, salt) do
