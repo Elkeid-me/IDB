@@ -93,7 +93,7 @@ defmodule Idb.Passwords.List do
   @moduledoc """
   列出用户所有条目
 
-  - API：`<host>:<port>/api/v1/item/edit`
+  - API：`<host>:<port>/api/v1/item/list`
   - 方法：GET
     - header
       - `Authorization`: `Bearer <从注册或登录获取的 access>`
