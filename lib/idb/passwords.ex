@@ -53,7 +53,10 @@ defmodule Idb.Passwords.Add do
 
       添加成功（例）：
       ```json
-      { "message": "添加成功" }
+      {
+        "id": 1,
+        "message": "添加成功"
+      }
       ```
       添加失败：
       ```json
@@ -79,7 +82,7 @@ defmodule Idb.Passwords.Add do
         }
 
         case Repo.insert(data) do
-          {:ok, _} -> Utils.send_message(conn, "添加成功")
+          {:ok, item} -> Utils.send_json(conn, %{message: "添加成功", id: item.id})
           {:error, _} -> Utils.send_detail(conn, "数据库插入失败", 500)
         end
 
